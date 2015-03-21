@@ -80,8 +80,9 @@ main = do
 
 a :: [[Int]]
 a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
+s :: String
+s = "12\n10\n20 30 40\n"
 
-triple = (take 3)
 readInts = map readInt . words
 readInt x = read x :: Int
 
@@ -94,16 +95,15 @@ caseC s = Case {cTot = c, nItems = n, cItems = ci} where
   n = head s!!1
   ci = s!!2
 
--- asdfasd
+--processData :: String -> [Case]
+-- processData s = map (caseC . triple) casesRaw where
+--   dat = readIntLists s
+--   --nCases = head dat
+--   casesRaw = tail dat
+--   triple = take 3
 
---processData = map (caseC . take 3 . readIntLists)
-processData :: String -> [Case]
-processData s = undefined where
-  dat = readIntLists s
-  nCases = head dat
-  casesRaw = tail dat
+dat = readIntLists s
 
-  --d_ = (caseC . take 3) casesRaw
 
 -- getLineInt :: Handle -> IO [Int]
 -- getLineInt h = do
@@ -113,4 +113,5 @@ processData s = undefined where
 --     Nothing -> getLineInt h
 
     
+
 
