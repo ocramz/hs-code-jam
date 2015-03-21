@@ -71,8 +71,8 @@ main = do
   inh <- openFile fnameIn ReadMode
   --outh <- openFile fnameOut WriteMode
   inStr <- hGetContents inh
-  --let result = processData inStr
-  let result = readIntLists inStr
+  let result = processData inStr
+  --let result = readIntLists inStr
   --hPutStr outh result
   print result
   hClose inh
@@ -82,7 +82,9 @@ a :: [[Int]]
 a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
 s :: String
 s = "12\n10\n20 30 40\n"
+dat = readIntLists s
 
+triple = take 3
 readInts = map readInt . words
 readInt x = read x :: Int
 
@@ -92,25 +94,26 @@ readIntLists = map readInts . lines
 caseC :: [[Int]] -> Case
 caseC s = Case {cTot = c, nItems = n, cItems = ci} where
   c = head (head s)
-  n = head s!!1
+  n = head (s!!1)
   ci = s!!2
 
---processData :: String -> [Case]
--- processData s = map (caseC . triple) casesRaw where
---   dat = readIntLists s
---   --nCases = head dat
---   casesRaw = tail dat
---   triple = take 3
-
-dat = readIntLists s
+processData :: String -> [Case]
+processData s =  packCases casesRaw where
+  d = readIntLists s
+  --nCases = head d
+  casesRaw = tail d
+  packCases ii = caseC (take 3 ii) : packCases (drop 3 ii)
 
 
--- getLineInt :: Handle -> IO [Int]
--- getLineInt h = do
---   line <- hGetLine h
---   case readMaybe line of
---     Just x -> return $ readInts x
---     Nothing -> getLineInt h
+
+-- processData :: String -> [Maybe Case]
+-- processData s =  packCases casesRaw where
+--   d = readIntLists s
+--   --nCases = head d
+--   casesRaw = tail d
+--   packCases ii = Just (caseC (take 3 ii)) : packCases (drop 3 ii)
+--   packCases [] = [Nothing]
+
 
     
 
