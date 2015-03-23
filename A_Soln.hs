@@ -97,18 +97,7 @@ caseC :: [[Int]] -> Case
 caseC s = Case {cTot = c, nItems = n, cItems = ci} where
   c = head (head s)
   n = head (s!!1)
-  ci = s!!2
-
-
---processData :: String -> [Case]
--- processData' s =  packCases casesRaw where
---   d = readIntLists s
---   --nCases = head d
---   casesRaw = tail d
-
--- packCases :: [[Int]] -> [Case]
--- packCases ii = caseC (take 3 ii) : packCases (drop 3 ii)
-
+  ci = sort (s!!2)
 
 
 a :: [[Int]]
@@ -117,7 +106,7 @@ s :: String
 s = "12\n10\n20 30 40\n"
 dat = readIntLists s
 
-
+c0 = Case {cTot = 35, nItems = 51, cItems = [5,9,26,43,82,85,143,151,156,191,206,210,223,225,256,270,274,293,299,300,337,380,386,397,423,525,568,580,582,591,622,626,631,641,659,673,714,733,770,777,820,851,851,861,885,899,921,973,985,994,995]}
     
 
 
