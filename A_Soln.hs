@@ -59,6 +59,7 @@ import System.IO
 import Control.Monad
 import Data.Maybe
 import Text.Read
+import Data.List
 
 fnameIn = "A-small-practice.in"
 fnameOut = "A-small-practice.out"
@@ -72,24 +73,25 @@ main = do
   --outh <- openFile fnameOut WriteMode
   inStr <- hGetContents inh
   let result = processData inStr
-  --let result = readIntLists inStr
   --hPutStr outh result
   print result
   hClose inh
   --hClose outh
-
-a :: [[Int]]
-a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
-s :: String
-s = "12\n10\n20 30 40\n"
-dat = readIntLists s
-
-triple = take 3
-readInts = map readInt . words
+      
 readInt x = read x :: Int
 
 readIntLists :: String -> [[Int]]
-readIntLists = map readInts . lines
+readIntLists = map readInts . lines where
+  readInts = map readInt . words
+
+chunk _ [] = []
+chunk n xs = y : chunk n y2 where
+  (y, y2) = splitAt n xs
+triples = chunk 3
+
+processData s = map caseC (triples d) where
+  d = tail c
+  c = readIntLists s
 
 caseC :: [[Int]] -> Case
 caseC s = Case {cTot = c, nItems = n, cItems = ci} where
@@ -97,22 +99,23 @@ caseC s = Case {cTot = c, nItems = n, cItems = ci} where
   n = head (s!!1)
   ci = s!!2
 
-processData :: String -> [Case]
-processData s =  packCases casesRaw where
-  d = readIntLists s
-  --nCases = head d
-  casesRaw = tail d
-  packCases ii = caseC (take 3 ii) : packCases (drop 3 ii)
 
-
-
--- processData :: String -> [Maybe Case]
--- processData s =  packCases casesRaw where
+--processData :: String -> [Case]
+-- processData' s =  packCases casesRaw where
 --   d = readIntLists s
 --   --nCases = head d
 --   casesRaw = tail d
---   packCases ii = Just (caseC (take 3 ii)) : packCases (drop 3 ii)
---   packCases [] = [Nothing]
+
+-- packCases :: [[Int]] -> [Case]
+-- packCases ii = caseC (take 3 ii) : packCases (drop 3 ii)
+
+
+
+a :: [[Int]]
+a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
+s :: String
+s = "12\n10\n20 30 40\n"
+dat = readIntLists s
 
 
     
