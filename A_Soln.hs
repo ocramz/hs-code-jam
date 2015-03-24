@@ -1,5 +1,5 @@
 module A_Soln where
-
+import Data.Monoid
 {-
 Problem
 
@@ -72,41 +72,121 @@ main = do
   inh <- openFile fnameIn ReadMode
   --outh <- openFile fnameOut WriteMode
   inStr <- hGetContents inh
-  let result = processData inStr
+  let cases = processData inStr
   --hPutStr outh result
-  print result
+  print cases
   hClose inh
   --hClose outh
-      
-readInt x = read x :: Int
 
-readIntLists :: String -> [[Int]]
-readIntLists = map readInts . lines where
-  readInts = map readInt . words
-
-chunk _ [] = []
-chunk n xs = y : chunk n y2 where
-  (y, y2) = splitAt n xs
-triples = chunk 3
-
-processData s = map caseC (triples d) where
-  d = tail c
-  c = readIntLists s
-
+processData :: String -> [Case]
+processData s = map caseC (triples d)
+  where
+    -- nCases = head (head c) 
+    d = tail c
+    c = readIntLists s
+  
 caseC :: [[Int]] -> Case
 caseC s = Case {cTot = c, nItems = n, cItems = ci} where
   c = head (head s)
   n = head (s!!1)
-  ci = sort (s!!2)
+  ci = s!!2
+
+readIntLists :: String -> [[Int]]
+readIntLists = map readInts . lines where
+  readInts = map readInt . words
+readInt x = read x :: Int
+
+triples :: [a] -> [[a]]
+triples = chunk 3
+chunk :: Int -> [a] -> [[a]]
+chunk _ [] = []
+chunk n xs = y : chunk n y2 where
+  (y, y2) = splitAt n xs
+
+dropNth n v = (take n v) ++ (drop (n+1) v)
+nth = flip (!!)
+circShiftL v = (drop 1 v) ++ [(head v)]
+
+mkETr :: a -> Tr a
+mkETr x = T E x E
+data Tr a = E | T (Tr a) a (Tr a) deriving (Eq, Show)
+member :: Ord a => a -> Tr a -> Bool
+member _ E = False
+member x (T a y b)
+  | x<y = member x a
+  | x>y = member x b
+  | otherwise = True
+insTr x E = mkETr x
+insTr x v@(T a y b) | x<y = T (insTr x a) y b
+                    | x>y = T a y (insTr x b)
+                    | otherwise = v
+listToTr :: Ord a => [a] -> Tr a
+listToTr v = foldr insTr E v
+
+--findTr :: (a -> Bool) -> Tr a -> a
+findTr f (T a x b) | f x = x
+                   
+findSumTr s c = findTr (\x -> x + s == c)
+
+-- instance Monoid (Tr a) where
+--   mempty = E
+--   --mappend = 
+
+-- a :: [[Int]]
+-- a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
+-- s :: String
+-- s = "12\n10\n20 30 40\n"
+-- dat = readIntLists s
+
+-- c0 = Case {cTot = 295, nItems = 17, cItems = [678,227,764,37,956,982,118,212,177,597,519,968,866,121,771,343,561]}
+
+-- main' f = do
+--   cases <- withReadFile fnameIn f
+--   print cases
+--   return cases
+
+-- withReadFile fname f = do
+--   h <- openFile fname ReadMode
+--   instr <- hGetContents h
+--   let resu = f instr
+--   return resu
+--   hClose h
+
+-- withHGetContents :: Handle -> (String -> a) -> IO a
+-- withHGetContents h f = do
+--   ins <- hGetContents h
+--   return $ f ins
+
+-- findIndices' :: (Num a, Enum a) => (a->Bool) -> [a] -> Maybe [a]
+-- findIndices' _ [] = Nothing
+-- findIndices' p xs = Just [i | (x,i) <- zip xs [0..], p x]
 
 
-a :: [[Int]]
-a = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
-s :: String
-s = "12\n10\n20 30 40\n"
-dat = readIntLists s
+-- g c = ct `elem` pv where
+--   pv = map (+ (head v)) (tail v)
+--   ct = cTot c
+--   v = sort $ cItems c
 
-c0 = Case {cTot = 35, nItems = 51, cItems = [5,9,26,43,82,85,143,151,156,191,206,210,223,225,256,270,274,293,299,300,337,380,386,397,423,525,568,580,582,591,622,626,631,641,659,673,714,733,770,777,820,851,851,861,885,899,921,973,985,994,995]}
-    
+-- h c = find (== ct) v where
+--   v = filter (< ct) (cItems c)
+--   ct = cTot c
+
+-- findSum :: Eq a => a -> [a] -> [Int]
+-- findSum _ [] = []
+-- findSum c v_ = findIndices (== c) (go v_) where
+--   go c (v:vs) | (any ((map (+v) vs)) == c) = 
+
+-- go c (v:vs) | (any ((map (+v) vs)) == c) = 
+
+--h' (v:vs) ct = find (== ct) v_ where
+  
+{- I think this approach is still O(n^2), where
+n is a subset of the input data -}
+-- findij c vv@(v:vs) = (find w vv, find z vv) where
+--   vvf = filter (< c) vv -- supposing every vv > 0
+--   cmpSum c u us | (u+hus)==c = (u, hus)
+--                 | otherwise = cmpSum c u (tail us)
+--     where hus = head us
+--   (w, z) = map (\a-> cmpSum c a (delete a vvf)) vvf
 
 
