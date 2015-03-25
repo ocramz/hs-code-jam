@@ -106,27 +106,61 @@ chunk n xs = y : chunk n y2 where
 dropNth n v = (take n v) ++ (drop (n+1) v)
 nth = flip (!!)
 circShiftL v = (drop 1 v) ++ [(head v)]
+-- -- adapted from Closest Pair
+f c v = find (\x -> sum x == c) (pairs $ sort v) where
+  pairs = chunk 2
+-- -- FIXME : f 4 [-1, 4, 5, 10, 3] does not return exact sum pair = [-1, 5]
+f' c v = p where
+  pairss = chunk 2 $ sort $ filter (< c) v
+  sumsTo x = c == sum x
+  p = find sumsTo pairss
 
-mkETr :: a -> Tr a
-mkETr x = T E x E
-data Tr a = E | T (Tr a) a (Tr a) deriving (Eq, Show)
-member :: Ord a => a -> Tr a -> Bool
-member _ E = False
-member x (T a y b)
-  | x<y = member x a
-  | x>y = member x b
-  | otherwise = True
-insTr x E = mkETr x
-insTr x v@(T a y b) | x<y = T (insTr x a) y b
-                    | x>y = T a y (insTr x b)
-                    | otherwise = v
-listToTr :: Ord a => [a] -> Tr a
-listToTr v = foldr insTr E v
+  
+
+-- mkETr :: a -> Tr a
+-- mkETr x = T E x E
+-- data Tr a = E | T (Tr a) a (Tr a) deriving (Eq, Show)
+-- member :: Ord a => a -> Tr a -> Bool
+-- member _ E = False
+-- member x (T a y b)
+--   | x<y = member x a
+--   | x>y = member x b
+--   | otherwise = True
+-- insTr x E = mkETr x
+-- insTr x v@(T a y b) | x<y = T (insTr x a) y b
+--                     | x>y = T a y (insTr x b)
+--                     | otherwise = v
+-- listToTr :: Ord a => [a] -> Tr a
+-- listToTr v = foldr insTr E v
+
+l0 = [-3, 2, 1,4,-5, 3]
+-- t1, t1' :: Tr Int
+-- t1 = listToTr l0
+-- t1' = listToTr $ sort l0
+
+-- f c v = t where
+--   sv = sort $ filter (< c) v
+--   t = listToTr sv
+
+-- lTr, rTr :: Tr a -> Tr a
+-- lTr (T a _ _) = a
+-- rTr (T _ _ b) = b
+-- vTr :: Tr a -> a
+-- vTr (T _ x _) = x
+
+                
+-- lCh (T (T a x b) y c) = x
+-- lCh _ = 0
+-- findSumTr :: (Ord a, Num a) => a -> Tr a -> a
+-- findSumTr c v@(T a x b) | x + l> c = findSumTr c a
+--                         | x + l< c = findSumTr c b
+--                         | otherwise = x where
+--                            l = lCh v
+-- findSumTr _ E = error "unreachable"
 
 --findTr :: (a -> Bool) -> Tr a -> a
-findTr f (T a x b) | f x = x
-                   
-findSumTr s c = findTr (\x -> x + s == c)
+-- findTr f (T a x b) | f x = x
+-- findSumTr s c = findTr (\x -> x + s == c) 
 
 -- instance Monoid (Tr a) where
 --   mempty = E
