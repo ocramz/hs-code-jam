@@ -114,7 +114,11 @@ f' c v = p where
   pairss = chunk 2 $ sort $ filter (< c) v
   sumsTo x = c == sum x
   p = find sumsTo pairss
-
+f'' c v = go c sfv where
+  sfv = sort $ filter (<c) v
+  go c (w:ws) | w + hws == c = (w, hws)
+              | otherwise = go c ws where
+                    hws = head ws
   
 
 -- mkETr :: a -> Tr a
